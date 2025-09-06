@@ -4,10 +4,27 @@
 
     function onError() {
       console.log('Loading error', arguments);
+      // Add debug output to the page
+      var errDiv = document.getElementById('errors');
+      if (errDiv) {
+        errDiv.innerHTML += "<pre>Loading error: " + JSON.stringify(arguments, null, 2) + "</pre>";
+      }
       ret.reject();
     }
 
     function onReady(smart)  {
+      // Debug: log the smart object and token info
+      console.log('SMART on FHIR client:', smart);
+      var errDiv = document.getElementById('errors');
+      if (errDiv) {
+        errDiv.innerHTML += "<pre>SMART object: " + JSON.stringify(smart, null, 2) + "</pre>";
+        if (smart && smart.state && smart.state.tokenResponse) {
+          errDiv.innerHTML += "<pre>Token Response: " + JSON.stringify(smart.state.tokenResponse, null, 2) + "</pre>";
+        } else {
+          errDiv.innerHTML += "<pre>No tokenResponse found in smart.state</pre>";
+        }
+      }
+
       if (smart.hasOwnProperty('patient')) {
         var patient = smart.patient;
         var pt = patient.read();
