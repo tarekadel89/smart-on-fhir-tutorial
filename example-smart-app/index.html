@@ -14,6 +14,7 @@
   <body>
     <div id='errors'>
     </div>
+    <div id="debug" style="background:#eee; color:#333; padding:10px; margin-bottom:10px; font-size:small; display:none;"></div>
     <div id="loading" class="spinner">
       <div class="bounce1"></div>
       <div class="bounce2"></div>
@@ -83,6 +84,30 @@
     <!-- https://github.com/cerner/fhir-client-cerner-additions -->
     <script src='./lib/js/fhir-client-cerner-additions-1.0.0.js'></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>
+      // Debugging block to help narrow down OAuth/FHIR issues
+      (function() {
+        var debugDiv = document.getElementById('debug');
+        var url = window.location.href;
+        var params = new URLSearchParams(window.location.search);
+        var hash = window.location.hash;
+        var debugMsg = "<b>Debug Info</b><br>";
+        debugMsg += "URL: " + url + "<br>";
+        debugMsg += "Search Params: " + window.location.search + "<br>";
+        debugMsg += "Hash: " + hash + "<br>";
+        if (params.has('error')) {
+          debugMsg += "<b>OAuth Error:</b> " + params.get('error') + "<br>";
+          debugMsg += "<b>Error Description:</b> " + params.get('error_description') + "<br>";
+        }
+        debugDiv.innerHTML = debugMsg;
+        debugDiv.style.display = 'block';
+        // Log FHIR.oauth2 state if available
+        if (window.FHIR && FHIR.oauth2) {
+          debugMsg += "<br><b>FHIR.oauth2 object:</b><br><pre>" + JSON.stringify(FHIR.oauth2, null, 2) + "</pre>";
+          debugDiv.innerHTML = debugMsg;
+        }
+      })();
+    </script>
     <script>
       extractData().then(
         //Display Patient Demographics and Observations if extractData was success
